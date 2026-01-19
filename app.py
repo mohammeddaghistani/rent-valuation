@@ -4,110 +4,106 @@ import folium
 from streamlit_folium import st_folium
 import os
 
-# 1. إعدادات الهوية (أيقونة التبويب والشعار)
+# --- 1. إعدادات الهوية والشعار بناءً على ملفك المرفق ---
+LOGO_URL = "https://mdaghistani.com/wp-content/uploads/2023/05/logo-gold.png" # رابط شعارك الرسمي
+
 st.set_page_config(
-    page_title="M. DAGHISTANI | التقدير العقاري",
-    page_icon="🦅", 
+    page_title="محمد داغستاني للتقييم العقاري",
+    page_icon=LOGO_URL,
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 2. محرك التنسيق "نيومورفيزم ذهبي وأخضر" (Luxury Tech RTL)
-# تم إلغاء الكحلي واستخدام الأبيض الصافي مع لمسات من أخضر وذهبي الشعار
-st.markdown("""
+# --- 2. محرك التنسيق "الهيبة والرشاقة" (Elite Slim RTL) ---
+st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:wght@700&display=swap');
 
-    /* الاتجاه العربي والخلفية النظيفة */
-    html, body, .stApp {
+    /* الإعدادات العامة والاتجاه */
+    html, body, .stApp {{
         direction: rtl !important;
         text-align: right !important;
         font-family: 'Cairo', sans-serif !important;
         background-color: #ffffff !important;
-    }
+    }}
 
-    /* الخانات النحيفة (Professional Slim) */
-    .stTextInput input, .stNumberInput input, .stSelectbox div[role="button"] {
-        height: 35px !important;
-        padding: 2px 10px !important;
-        font-size: 0.9rem !important;
-        border-radius: 6px !important;
+    /* الرشاقة القصوى للخانات (Slim Design) */
+    .stTextInput input, .stNumberInput input, .stSelectbox div[role="button"], .stTextArea textarea {{
+        height: 32px !important; /* حجم نحيف جداً واحترافي */
+        padding: 0px 10px !important;
+        font-size: 0.85rem !important;
+        border-radius: 4px !important;
         border: 1px solid #e2e8f0 !important;
         background-color: #fcfcfc !important;
         direction: rtl !important;
-    }
+    }}
 
-    /* العناوين بهوية الشعار (ذهبي وأخضر) */
-    .brand-title {
-        font-family: 'Amiri', serif !important;
-        color: #B8860B !important;
-        font-size: clamp(2rem, 5vw, 3rem) !important;
-        text-align: center !important;
-        margin: 0 !important;
-    }
-    
-    .tech-line {
-        width: 100px;
-        height: 3px;
-        background: linear-gradient(90deg, #B8860B, #228B22); /* تدرج ذهبي أخضر مثل الشعار */
-        margin: 10px auto 30px auto;
-        border-radius: 10px;
-    }
+    /* عناوين الخانات (Labels) - صغيرة وأنيقة */
+    label {{
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
+        color: #b45309 !important; /* لون ذهبي الشعار */
+        margin-bottom: 2px !important;
+    }}
 
-    /* التبويبات المطورة (Tabs) */
-    .stTabs [data-baseweb="tab-list"] {
+    /* التبويبات (Tabs) - تبدأ من اليمين بنمط Apple */
+    .stTabs [data-baseweb="tab-list"] {{
         direction: rtl !important;
         display: flex !important;
         flex-direction: row-reverse !important;
-        gap: 10px;
+        gap: 12px;
         background-color: #f8fafc;
-        padding: 8px;
-        border-radius: 12px;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #B8860B !important;
-        color: white !important;
+        padding: 5px;
         border-radius: 8px;
-    }
-
-    /* الأزرار الملكية (Slim Black & Gold) */
-    div.stButton > button {
-        height: 38px !important;
-        background: #1a1a1a !important;
-        color: #B8860B !important;
-        border: 1px solid #B8860B !important;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        background-color: transparent !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
+        height: 35px !important;
+    }}
+    .stTabs [aria-selected="true"] {{
+        background-color: white !important;
+        color: #065f46 !important; /* أخضر الشعار */
         border-radius: 6px !important;
-        font-weight: 700 !important;
-        width: 100% !important;
-    }
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }}
 
-    /* الجداول الاحترافية */
-    .stDataFrame { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; }
+    /* الأزرار الملكية النحيفة */
+    div.stButton > button {{
+        height: 35px !important;
+        background: #1e293b !important; /* أسود ملكي */
+        color: #b45309 !important; /* كتابة ذهبية */
+        border: 1px solid #b45309 !important;
+        border-radius: 4px !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+    }}
+
+    /* إخفاء الزوائد التقنية */
+    #MainMenu, footer, header {{visibility: hidden;}}
 </style>
 """, unsafe_allow_html=True)
 
-# 3. محرك العمليات والمعادلات (Logic Engine)
-def calculate_valuation(area, price):
-    # معادلة التقدير الأساسية
-    return area * price
-
+# --- 3. محرك العمليات (Logic) ---
 def render_satellite_map():
-    # خريطة الأقمار الصناعية (Satellite)
+    # إحداثيات مكة المكرمة
     m = folium.Map(location=[21.4225, 39.8262], zoom_start=16)
     folium.TileLayer(
-        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attr='Esri Satellite', name='الساتلايت'
+        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}',
+        attr='Esri Satellite', name='ساتلايت'
     ).add_to(m)
     st_folium(m, width="100%", height=400)
 
-# 4. واجهة التطبيق الرئيسية
+# --- 4. الهيكل الرئيسي للتطبيق ---
 def main():
-    # الهيدر (استدعاء شعارك المرفوع)
+    # الهيدر الفخم المستوحى من ملف HTML الخاص بك
     st.markdown(f"""
-        <div style="text-align:center; padding:20px;">
-            <h1 class="brand-title">محمد داغستاني للتقييم العقاري</h1>
-            <p style="color:#228B22; font-weight:700; margin-top:-10px;">نظام إدارة العلاقات والتقدير الإيجاري الاستثماري</p>
-            <div class="tech-line"></div>
+        <div style="text-align:center; padding-bottom:15px;">
+            <img src="{LOGO_URL}" width="65" style="margin-bottom:10px;">
+            <h1 style="font-family:'Amiri', serif; color:#b45309; font-size:2.4rem; margin:0;">محمد داغستاني للتقييم العقاري</h1>
+            <p style="color:#065f46; font-size:0.95rem; font-weight:700; margin-top:-5px;">نظام إدارة العلاقات والتقدير الإيجاري الاستثماري</p>
+            <div style="width:50px; height:2px; background:linear-gradient(to left, #b45309, #065f46); margin:10px auto;"></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -116,36 +112,31 @@ def main():
         from modules.auth import login_required
         user = login_required()
     except:
-        st.warning("⚠️ يرجى ضبط أسرار الدخول في Secrets.")
+        st.warning("⚠️ يرجى التأكد من رفع موديول auth وضبط Secrets الدخول.")
         return
 
     if user:
-        # التبويبات بتنسيق اليمين لليسار (RTL)
-        tab1, tab2, tab3 = st.tabs(["📊 لوحة العمليات", "📍 معاينة الساتلايت", "⚙️ الإدارة"])
+        # التبويبات بنظام RTL الحقيقي
+        tab1, tab2, tab3 = st.tabs(["📊 البيانات والعمليات", "📍 المعاينة الجيو-مكانية", "💼 الأرشيف والإدارة"])
 
         with tab1:
-            st.markdown("<h4 style='color:#B8860B;'>إدخال بيانات التقدير</h4>", unsafe_allow_html=True)
-            col1, col2 = st.columns(2)
+            st.markdown("<p style='color:#b45309; font-weight:bold;'>عملية تقدير جديدة</p>", unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
             with col1:
-                name = st.text_input("اسم العميل / العقار")
-                area = st.number_input("المساحة الإجمالية (م2)", min_value=1.0)
+                st.text_input("اسم العقار / العميل")
             with col2:
-                price = st.number_input("سعر المتر التقديري (ريال)", min_value=1.0)
-                category = st.selectbox("نوع النشاط", ["تجاري", "سكني", "صناعي"])
+                st.number_input("المساحة الإجمالية", value=0.0)
+            with col3:
+                st.selectbox("نوع النشاط", ["تجاري", "سكني", "إداري"])
             
-            if st.button("تشغيل معادلة التقدير"):
-                result = calculate_valuation(area, price)
-                st.success(f"التقدير الإيجاري المقترح: {result:,.2f} ريال سعودي")
+            st.button("حفظ البيانات وتوليد التقرير")
 
         with tab2:
-            st.markdown("<h4 style='color:#B8860B;'>المعاينة الجيومكانية</h4>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#b45309; font-weight:bold;'>معاينة الأقمار الصناعية (Satellite)</p>", unsafe_allow_html=True)
             render_satellite_map()
 
         with tab3:
-            st.info("قسم إدارة الصفقات والأرشيف.")
-            # مثال لجدول البيانات النحيف
-            df = pd.DataFrame({"العقار": ["برج مكة", "مجمع تجاري"], "القيمة": ["5M", "12M"]})
-            st.table(df)
+            st.info("سجل العمليات والتقارير المؤرشفة.")
 
 if __name__ == "__main__":
     main()
