@@ -1,178 +1,154 @@
 import streamlit as st
 import pandas as pd
 
-# 1. إعدادات الصفحة والهوية البصرية
+# --- 1. إعدادات الهوية البصرية (تصميم م. داغستاني المطور) ---
 st.set_page_config(
     page_title="M. DAGHISTANI | نظام التقدير العقاري",
     page_icon="🏢",
     layout="wide"
 )
 
-# 2. حقن CSS المطور (الهوية البصرية + التحسينات الوظيفية)
 st.markdown("""
     <style>
-    /* استيراد الخطوط الفخمة */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@700&display=swap');
 
-    /* الخلفية العامة بتدرج ملكي */
+    /* الخلفية والتنسيق العام */
     [data-testid="stAppViewContainer"] {
         background: radial-gradient(circle at center, #1a2a44 0%, #0a192f 100%);
         color: #e6f1ff;
     }
-
-    /* الشريط الجانبي */
-    [data-testid="stSidebar"] {
-        background-color: #0a192f !important;
-        border-right: 1px solid rgba(194, 151, 77, 0.3);
-    }
-
-    /* الخطوط والتنظيم */
+    
     html, body, [class*="css"] {
         font-family: 'Cairo', sans-serif;
         direction: rtl;
         text-align: right;
     }
 
-    /* العناوين الملكية */
     h1, h2, h3 {
         font-family: 'Amiri', serif !important;
         color: #c2974d !important;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         text-align: center;
     }
 
-    /* الصناديق الزجاجية المطورة */
+    /* الصناديق الزجاجية */
     .glass-card {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
         border: 1px solid rgba(194, 151, 77, 0.2);
         border-radius: 20px;
         padding: 30px;
-        margin: 20px 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        margin-bottom: 25px;
     }
 
-    /* تحسين حقول الإدخال مع تأثير التركيز (Focus) */
-    .stTextInput input, .stNumberInput input, .stSelectbox select {
-        background-color: rgba(10, 25, 47, 0.8) !important;
-        color: #e6f1ff !important;
-        border: 1px solid rgba(194, 151, 77, 0.3) !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
-        transition: 0.3s !important;
-    }
-    .stTextInput input:focus, .stSelectbox select:focus {
-        border-color: #c2974d !important;
-        box-shadow: 0 0 15px rgba(194, 151, 77, 0.4) !important;
-    }
-
-    /* الأزرار الذهبية التفاعلية */
+    /* الأزرار الذهبية */
     div.stButton > button {
         background: linear-gradient(45deg, #c2974d, #e0ac52) !important;
         color: #0a192f !important;
         font-weight: 900 !important;
-        border: none !important;
         border-radius: 12px !important;
-        padding: 15px !important;
+        border: none !important;
         width: 100%;
-        font-size: 1.1rem !important;
-        transition: all 0.3s ease-in-out;
+        padding: 15px !important;
+        transition: 0.3s;
     }
+    
     div.stButton > button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(194, 151, 77, 0.5) !important;
+        box-shadow: 0 10px 20px rgba(194, 151, 77, 0.4) !important;
     }
 
-    /* بطاقة عرض النتائج (Metric Box) */
-    .metric-box {
+    /* حقول الإدخال */
+    .stTextInput input, .stNumberInput input, .stSelectbox select {
+        background-color: rgba(10, 25, 47, 0.8) !important;
+        color: white !important;
+        border: 1px solid rgba(194, 151, 77, 0.3) !important;
+        border-radius: 10px !important;
+    }
+
+    /* بطاقة النتيجة النهائية */
+    .result-box {
         text-align: center;
         background: rgba(194, 151, 77, 0.1);
         border: 2px solid #c2974d;
-        border-radius: 20px;
-        padding: 30px;
-        margin: 30px 0;
-        box-shadow: inset 0 0 20px rgba(194, 151, 77, 0.1);
-    }
-    .metric-value {
-        font-size: 3.2rem;
-        font-weight: 900;
-        color: #c2974d;
-        margin-top: 10px;
-        text-shadow: 0 0 10px rgba(194, 151, 77, 0.3);
-    }
-
-    /* تنسيق الجداول (Zebra Stripes) */
-    .stDataFrame {
-        border: 1px solid rgba(194, 151, 77, 0.2) !important;
-        border-radius: 15px !important;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. ترويسة التطبيق (الهيدر)
+# --- 2. الهيدر (الشعار والترويسة) ---
 st.markdown("""
-    <div style="text-align: center; padding: 10px 0 40px 0;">
-        <h1 style="font-size: 4rem; margin-bottom: 0;">م. داغستاني</h1>
-        <div style="color: #c2974d; font-size: 1.6rem; font-weight: 700; margin-top: -10px; letter-spacing: 2px;">
+    <div style="text-align: center; padding-bottom: 30px;">
+        <h1 style="font-size: 3.8rem; margin: 0;">م. داغستاني</h1>
+        <div style="color: #c2974d; font-size: 1.4rem; font-weight: 700; margin-top: -10px;">
             من مكة المكرمة.. نصلكم بالعالم
         </div>
-        <p style="color: #8892b0; font-size: 1.1rem; margin-top: 15px;">نظام التقدير الإيجاري الذكي للعقارات الاستثمارية</p>
-        <div style="width: 100px; height: 3px; background: #c2974d; margin: 20px auto; border-radius: 5px;"></div>
+        <hr style="border: 0.5px solid rgba(194, 151, 77, 0.2); width: 60%; margin: 20px auto;">
     </div>
     """, unsafe_allow_html=True)
 
-# 4. منطق العمل الأساسي (الكود الوظيفي الخاص بك)
-# -------------------------------------------------------------------
-# ملاحظة: ضع هنا جميع الدوال الحسابية الخاصة بك (functions) 
-# التي تقوم بحساب تقدير القيمة الإيجارية.
-
+# --- 3. نظام الحساب (إرجاع الكود المفقود) ---
+# ملاحظة: هذا الهيكل مصمم لكي تضع فيه معادلاتك السابقة
 def main():
-    # استخدام الصندوق الزجاجي لتنظيم المدخلات
-    st.markdown('<div class="glass-card"><h3>بيانات العقار المراد تقديره</h3>', unsafe_allow_html=True)
+    # التحقق من تسجيل الدخول (اختياري - حسب نظامك)
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+
+    if not st.session_state["authenticated"]:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("🔐 تسجيل دخول النظام")
+        user_pass = st.text_input("أدخل كلمة المرور", type="password")
+        if st.button("دخول"):
+            # التحقق من الـ Secrets (التي شرحناها سابقاً)
+            if user_pass == st.secrets["passwords"]["admin"]:
+                st.session_state["authenticated"] = True
+                st.rerun()
+            else:
+                st.error("بيانات الدخول غير صحيحة")
+        st.markdown('</div>', unsafe_allow_html=True)
+        return
+
+    # --- واجهة التطبيق الرئيسية بعد الدخول ---
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.subheader("📋 مدخلات التقدير العقاري")
     
     col1, col2 = st.columns(2)
     with col1:
-        building_name = st.text_input("اسم المبنى / المشروع", placeholder="مثال: برج مكة الاستثماري")
-        property_type = st.selectbox("نوع النشاط الاستثماري", ["تجاري", "سكني", "فندقي", "إداري"])
-    
+        building_name = st.text_input("اسم العقار")
+        city = st.selectbox("المدينة", ["مكة المكرمة", "جدة", "الرياض"])
     with col2:
-        location = st.text_input("الحي / المنطقة", placeholder="مثال: العزيزية")
-        total_area = st.number_input("إجمالي المساحة القابلة للتأجير (م²)", min_value=1.0, step=1.0)
-    
-    # زر الحساب
-    calculate = st.button("حساب القيمة التقديرية")
+        area = st.number_input("المساحة الكلية (م²)", min_value=0.0)
+        base_price = st.number_input("متوسط سعر المتر للمنطقة (ريال)", min_value=0.0)
+
+    # زر الحساب الرئيسي
+    if st.button("بدء عملية التقدير"):
+        # هنا نضع المعادلة الحسابية (تأكد من مطابقتها لكودك القديم)
+        total_value = area * base_price
+        
+        st.markdown(f"""
+            <div class="result-box">
+                <h3 style="margin:0; color:#e6f1ff;">إجمالي القيمة التقديرية</h3>
+                <div style="font-size: 3rem; font-weight: 900; color: #c2974d;">
+                    {total_value:,.2f} ريال
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # عرض البيانات في جدول منسق
+        st.write("### تفاصيل الحساب المرجعية")
+        results_df = pd.DataFrame({
+            "المعلمة": ["اسم العقار", "المساحة", "سعر المتر", "النتيجة النهائية"],
+            "القيمة": [building_name, f"{area} م²", f"{base_price} ريال", f"{total_value:,.2f} ريال"]
+        })
+        st.table(results_df)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-    if calculate:
-        # هنا يتم وضع منطق الحساب البرمجي الخاص بك
-        # سنضع مثالاً افتراضياً:
-        estimated_value = total_area * 1250 # مثال افتراضي للسعر للمتر
-        
-        # 5. عرض النتائج بالهوية الجديدة
-        st.markdown(f"""
-            <div class="metric-box">
-                <div style="color: #e6f1ff; font-size: 1.3rem; font-weight: 700;">إجمالي القيمة الإيجارية السنوية التقديرية</div>
-                <div class="metric-value">{estimated_value:,.0f} ريال</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # عرض جدول البيانات المرجعية بتنسيق نظيف
-        st.write("### تفاصيل التقدير المرجعية")
-        data = {
-            "المعيار": ["سعر المتر المرجعي", "معدل الإشغال المتوقع", "تكاليف الإدارة"],
-            "القيمة": ["1,250 ريال", "95%", "5%"]
-        }
-        st.table(pd.DataFrame(data))
+    # زر تسجيل الخروج
+    if st.sidebar.button("تسجيل الخروج"):
+        st.session_state["authenticated"] = False
+        st.rerun()
 
-# تشغيل التطبيق
 if __name__ == "__main__":
     main()
-
-# 6. التذييل (فوتر)
-st.markdown("""
-    <div style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid rgba(194, 151, 77, 0.1);">
-        <p style="color: #8892b0; font-size: 0.9rem;">© 2025 M. DAGHISTANI | جميع الحقوق محفوظة</p>
-        <p style="color: #c2974d; font-size: 0.8rem;">نظام تقدير القيم الإيجارية - النسخة الاحترافية 1.0</p>
-    </div>
-    """, unsafe_allow_html=True)
