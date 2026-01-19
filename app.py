@@ -1,125 +1,120 @@
 import streamlit as st
+
+# استيراد الوظائف الأساسية
 try:
     from modules.db import init_db, ensure_settings
     from modules.auth import login_required
     from modules.dashboard import render_dashboard
 except ImportError:
-    st.error("خطأ: يرجى التأكد من رفع جميع ملفات المجلد modules")
+    st.error("تنبيه: مجلد modules مفقود أو غير مكتمل في GitHub")
 
-# --- الإعدادات المتقدمة للفخامة والتوافق ---
+# --- إعدادات الفخامة القصوى وتوافق الأجهزة ---
 st.set_page_config(
-    page_title="M. DAGHISTANI | نظام التقدير العقاري",
+    page_title="M. DAGHISTANI",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# --- محرك التنسيق الاحترافي (Professional UI Engine) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Amiri:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@700&display=swap');
 
-    /* 1. التوافق مع الشاشات (Responsive) والخلفية السيادية */
+    /* 1. الخلفية السيادية (Deep Midnight) */
     [data-testid="stAppViewContainer"] {
-        background: radial-gradient(circle at 50% 50%, #112240 0%, #0a192f 100%) !important;
-        color: #FFFFFF !important;
+        background-color: #050a14 !important;
+        background-image: radial-gradient(circle at 50% 50%, #0a192f 0%, #050a14 100%) !important;
     }
 
-    /* 2. توحيد الخطوط وتنسيق النصوص */
+    /* 2. وضوح النصوص (Pure White & Gold) */
     html, body, [class*="css"], .stMarkdown {
         font-family: 'Cairo', sans-serif !important;
         direction: rtl;
         text-align: right;
+        color: #FFFFFF !important; /* أبيض ناصع لأقصى وضوح */
     }
 
-    /* 3. الهيدر الملكي (متوافق مع الجوال) */
-    .main-header {
-        text-align: center;
-        padding: 20px;
-        border-bottom: 2px solid rgba(194, 151, 77, 0.3);
-        margin-bottom: 40px;
-    }
-    .main-header h1 {
+    /* 3. العناوين (Royal Gold) */
+    h1, h2, h3 {
         font-family: 'Amiri', serif !important;
         color: #c2974d !important;
-        font-size: clamp(2rem, 8vw, 4rem) !important; /* حجم خط مرن للجوال */
-        margin: 0;
+        text-shadow: 0px 4px 10px rgba(0,0,0,0.5);
     }
 
-    /* 4. تنسيق الخلايا والجداول الفخم */
+    /* 4. تنسيق الجداول والخلايا (Elite Tables) */
+    /* جعل الجدول يبدو كقطعة واحدة فخمة */
     .stDataFrame, div[data-testid="stTable"] {
-        background: rgba(255, 255, 255, 0.02) !important;
-        border: 1px solid rgba(194, 151, 77, 0.2) !important;
-        border-radius: 15px !important;
+        border: 1px solid rgba(194, 151, 77, 0.3) !important;
+        border-radius: 12px !important;
         overflow: hidden !important;
+        background: rgba(255, 255, 255, 0.02) !important;
     }
     
-    /* ألوان خلايا الجدول */
     th {
         background-color: #c2974d !important;
-        color: #0a192f !important;
+        color: #050a14 !important;
         font-weight: 900 !important;
-        text-align: center !important;
+        padding: 15px !important;
     }
+    
     td {
-        background-color: rgba(10, 25, 47, 0.5) !important;
-        color: #e6f1ff !important;
-        border-bottom: 0.1px solid rgba(194, 151, 77, 0.1) !important;
+        background-color: rgba(10, 25, 47, 0.4) !important;
+        border-bottom: 1px solid rgba(194, 151, 77, 0.1) !important;
+        color: #ffffff !important;
+        padding: 12px !important;
     }
 
-    /* 5. تصميم الحقول والمدخلات (Premium UI) */
-    .stTextInput input, .stNumberInput input, .stSelectbox div {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        color: white !important;
-        border: 1px solid rgba(194, 151, 77, 0.4) !important;
-        border-radius: 12px !important;
-        height: 50px !important;
-        transition: 0.3s all ease;
-    }
-    .stTextInput input:focus {
-        border-color: #c2974d !important;
-        box-shadow: 0 0 15px rgba(194, 151, 77, 0.3) !important;
-    }
-
-    /* 6. الأزرار الذهبية (تأثير المرآة) */
+    /* 5. الأزرار (Gold Leaf Effect) */
     div.stButton > button {
-        background: linear-gradient(145deg, #c2974d, #a67c37) !important;
-        color: #0a192f !important;
+        background: linear-gradient(135deg, #c2974d 0%, #a67c37 100%) !important;
+        color: #050a14 !important;
         font-weight: 900 !important;
         border: none !important;
-        border-radius: 12px !important;
-        padding: 18px !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: 0.4s;
+        border-radius: 10px !important;
+        padding: 12px 24px !important;
+        font-size: 1.1rem !important;
+        transition: 0.3s all ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
     }
+    
     div.stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(194, 151, 77, 0.5) !important;
+        box-shadow: 0 8px 25px rgba(194, 151, 77, 0.6) !important;
     }
 
-    /* 7. تحسين القائمة الجانبية للجوال */
-    [data-testid="stSidebar"] {
-        background-color: #0a192f !important;
-        border-left: 1px solid rgba(194, 151, 77, 0.2);
+    /* 6. توافق الجوال (Mobile Optimization) */
+    @media (max-width: 768px) {
+        .stMain { padding: 10px !important; }
+        h1 { font-size: 2.2rem !important; }
+    }
+
+    /* 7. تنسيق المدخلات (Modern Inputs) */
+    input, select, textarea {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(194, 151, 77, 0.4) !important;
+        color: white !important;
+        border-radius: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
 def main():
-    # استدعاء الوظائف الأصلية
+    # الوظائف الأساسية
     init_db()
     ensure_settings()
     
-    # عرض الهيدر المطور
+    # شعار م. داغستاني الفخم
     st.markdown("""
-        <div class="main-header">
-            <h1>م. داغستاني</h1>
-            <div style="color: #c2974d; font-weight: 700; font-size: 1.2rem;">
-                نصلكم بالعالم.. من قلب مكة المكرمة
+        <div style="text-align: center; padding: 40px 0;">
+            <h1 style="margin: 0;">م. داغستاني</h1>
+            <div style="color: #c2974d; font-size: 1.4rem; font-weight: 700; letter-spacing: 1px;">
+                من مكة المكرمة.. نصلكم بالعالم
             </div>
+            <div style="width: 60px; height: 3px; background: #c2974d; margin: 15px auto; border-radius: 10px;"></div>
         </div>
     """, unsafe_allow_html=True)
 
-    # تشغيل نظام الدخول ولوحة التحكم
+    # تشغيل النظام
     user = login_required()
     if user:
         render_dashboard(user)
