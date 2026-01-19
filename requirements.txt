@@ -1,5 +1,10 @@
 streamlit
 pandas
+sqlalchemy
+folium
+streamlit-folium
+jinja2
+fpdf2
 arabic-reshaper
 python-bidi
-fpdf2
+pypdf
