@@ -8,3 +8,5 @@ fpdf2
 arabic-reshaper
 python-bidi
 pypdf
+folium
+streamlit-folium
