@@ -2,153 +2,86 @@ import streamlit as st
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
-import os
+import math
 
-# --- 1. إعدادات الهوية واللوجو ---
-logo_url = "https://mdaghistani.com/wp-content/uploads/2023/05/logo-gold.png"
-st.set_page_config(
-    page_title="محمد داغستاني للتقييم العقاري",
-    page_icon=logo_url,
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# --- 1. إعدادات الهوية ---
+st.set_page_config(page_title="محمد داغستاني للتقييم العقاري", page_icon="⚜️", layout="wide")
 
-# --- 2. محرك التنسيق العالمي الصارم (Strict RTL & Slim UI) ---
-st.markdown(f"""
+# --- 2. محرك التنسيق (Strict RTL & Slim UI) ---
+st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri:wght@700&display=swap');
-
-    /* ضبط اتجاه التطبيق بالكامل ليقرأ من اليمين لليسار */
-    html, body, .stApp, [data-testid="stAppViewContainer"] {{
-        direction: rtl !important;
-        text-align: right !important;
-        font-family: 'Cairo', sans-serif !important;
-        background-color: #ffffff !important;
-    }}
-
-    /* تصغير الخانات (Slim) وجعل النص بداخلها يبدأ من اليمين */
-    input, select, textarea, [data-baseweb="select"] {{
-        direction: rtl !important;
-        text-align: right !important;
-        height: 35px !important;
-        font-size: 0.9rem !important;
-        border-radius: 4px !important;
-        border: 1px solid #e2e8f0 !important;
-        background-color: #fcfcfc !important;
-    }}
-
-    /* ضبط اتجاه حقول النصوص الخاصة بـ Streamlit */
-    .stTextInput div, .stNumberInput div, .stSelectbox div {{
-        direction: rtl !important;
-    }}
-
-    /* تسميات الخانات (Labels) - صغيرة وأنيقة للهيبة */
-    label {{
-        font-size: 0.82rem !important;
-        font-weight: 700 !important;
-        color: #B8860B !important;
-        margin-bottom: 2px !important;
-        display: block !important;
-        width: 100% !important;
-        text-align: right !important;
-    }}
-
-    /* التبويبات (Tabs) - تبدأ من اليمين بشكل حقيقي */
-    .stTabs [data-baseweb="tab-list"] {{
-        flex-direction: row-reverse !important;
-        justify-content: flex-end !important;
-        gap: 15px !important;
-        border-bottom: 2px solid #f1f5f9 !important;
-    }}
-    
-    .stTabs [data-baseweb="tab"] {{
-        height: 40px !important;
-        padding: 0 15px !important;
-        font-weight: 700 !important;
-        color: #64748b !important;
-    }}
-
-    .stTabs [aria-selected="true"] {{
-        color: #B8860B !important;
-        border-bottom-color: #B8860B !important;
-    }}
-
-    /* الأزرار الملكية - رشاقة وهيبة */
-    div.stButton > button {{
-        height: 36px !important;
-        background: #1a1a1a !important;
-        color: #B8860B !important;
-        border: 1px solid #B8860B !important;
-        border-radius: 4px !important;
-        font-weight: 700 !important;
-        font-size: 0.85rem !important;
-        width: 100% !important;
-    }}
-
-    /* إخفاء الزوائد */
-    #MainMenu, footer, header {{visibility: hidden;}}
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri:wght@700&display=swap');
+    html, body, [data-testid="stAppViewContainer"] {
+        direction: rtl !important; text-align: right !important; font-family: 'Cairo', sans-serif !important;
+    }
+    /* تصغير الخانات وضبط اتجاه الكتابة بداخلها */
+    input, select, textarea {
+        direction: rtl !important; text-align: right !important;
+        height: 32px !important; font-size: 0.85rem !important; border-radius: 4px !important;
+    }
+    .stTabs [data-baseweb="tab-list"] { flex-direction: row-reverse !important; justify-content: flex-end !important; }
+    label { font-size: 0.8rem !important; color: #B8860B !important; text-align: right !important; display: block !important; }
+    div.stButton > button { height: 35px !important; background: #1a1a1a !important; color: #B8860B !important; width: 100% !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. وظائف النظام (Logic) ---
-def render_satellite_map():
-    # إحداثيات افتراضية (مكة المكرمة)
-    m = folium.Map(location=[21.4225, 39.8262], zoom_start=16)
-    # إضافة طبقة الساتلايت العالمية
-    folium.TileLayer(
-        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attr='Esri Satellite',
-        name='الأقمار الصناعية'
-    ).add_to(m)
-    st_folium(m, width="100%", height=400)
+# --- 3. المعادلات والعمليات (المنطق البرمجي) ---
+def calculate_valuation(area, unit_price, floor_factor, location_score):
+    """معادلة التقدير الإيجاري الاستثماري"""
+    base_value = area * unit_price
+    adjusted_value = base_value * (floor_factor) * (1 + (location_score / 100))
+    return adjusted_value
 
-# --- 4. الصفحة الرئيسية ---
+def calculate_confidence_score(num_deals, proximity_km):
+    """معادلة درجة الثقة في التقييم"""
+    # كلما زادت الصفقات وقربت المسافة زادت الثقة
+    score = (num_deals * 10) + (100 / (proximity_km + 1))
+    return min(99, round(score, 1))
+
+# --- 4. واجهة العمليات (التطبيق الفعلي) ---
 def main():
-    # الهيدر الاحترافي
-    st.markdown(f"""
-        <div style="text-align:center; padding-bottom:15px;">
-            <img src="{logo_url}" width="70">
-            <h1 style="font-family:'Amiri', serif; color:#B8860B; font-size:2.4rem; margin:0;">محمد داغستاني للتقييم العقاري</h1>
-            <p style="color:#64748b; font-size:0.95rem; font-weight:700; margin-top:-5px;">نظام التقدير الإيجاري الاستثماري الذكي</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # محاكاة الدخول لضمان عدم فقدان الخصائص (يمكن ربطها بملف auth الأصلي)
-    is_logged_in = True 
+    st.markdown("<h1 style='text-align:center; color:#B8860B; font-family:Amiri;'>محمد داغستاني للتقييم العقاري</h1>", unsafe_allow_html=True)
     
-    if is_logged_in:
-        # التبويبات تبدأ من اليمين
-        tab1, tab2, tab3, tab4 = st.tabs(["📊 المؤشرات", "📍 المعاينة", "📝 العمليات", "⚙️ الإعدادات"])
+    tab1, tab2, tab3 = st.tabs(["📝 عملية تقييم جديدة", "🌍 خريطة الساتلايت", "📊 سجل الصفقات"])
+
+    with tab1:
+        st.markdown("<p style='text-align:right; font-weight:bold;'>إدخال بيانات التقدير الإيجاري</p>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
         
-        with tab1:
-            st.markdown("<p style='color:#B8860B; font-weight:700;'>لوحة تحليل البيانات</p>", unsafe_allow_html=True)
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("إجمالي التقييمات", "452", "+12")
-            with col2:
-                st.metric("متوسط سعر المتر", "3,200 ر.س", "ثابت")
-            with col3:
-                st.metric("نسبة النمو", "8.4%", "+1.2%")
+        with col1:
+            name = st.text_input("اسم العقار/العميل")
+            area = st.number_input("المساحة (م2)", min_value=1.0, value=100.0)
+        with col2:
+            base_price = st.number_input("سعر المتر التقديري", value=500.0)
+            floor = st.selectbox("الدور", options=[1.0, 1.2, 0.9], format_func=lambda x: "أرضي" if x==1.2 else "متكرر")
+        with col3:
+            loc_score = st.slider("درجة الموقع (0-20)", 0, 20, 10)
 
-        with tab2:
-            st.markdown("<p style='color:#B8860B; font-weight:700;'>خريطة المعاينة (ساتلايت)</p>", unsafe_allow_html=True)
-            render_satellite_map()
-
-        with tab3:
-            st.markdown("<p style='color:#B8860B; font-weight:700;'>إدخال بيانات صفقة جديدة</p>", unsafe_allow_html=True)
-            # نموذج إدخال نحيف وأنيق (Slim UI)
-            c1, c2 = st.columns(2)
-            with c1:
-                st.text_input("اسم العقار / العميل")
-                st.number_input("مساحة العقار (م2)", min_value=0)
-            with c2:
-                st.selectbox("نوع العقار", ["سكني", "تجاري", "إداري", "صناعي"])
-                st.date_input("تاريخ المعاينة")
+        if st.button("تشغيل معادلة التقييم"):
+            res = calculate_valuation(area, base_price, floor, loc_score)
+            conf = calculate_confidence_score(5, 0.5) # قيم افتراضية كمثال
             
-            st.button("حفظ الصفقة وتوليد التقييم")
+            st.success(f"التقدير الإيجاري السنوي: {res:,.2f} ريال سعودي")
+            st.info(f"درجة الثقة في التقييم: {conf}%")
 
-        with tab4:
-            st.info("إعدادات النظام والتحكم في المستخدمين.")
+    with tab2:
+        st.markdown("<p style='text-align:right;'>المعاينة الجيومكانية (Satellite)</p>", unsafe_allow_html=True)
+        m = folium.Map(location=[21.4225, 39.8262], zoom_start=15)
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri Satellite', name='Satellite'
+        ).add_to(m)
+        st_folium(m, width="100%", height=400)
+
+    with tab3:
+        # هنا تظهر الصفقات التي كانت في ملف db
+        st.write("سجل الصفقات المرجعية (Database)")
+        df_sample = pd.DataFrame({
+            "التاريخ": ["2024-01-01", "2024-01-10"],
+            "العقار": ["مبنى أ", "محل ب"],
+            "القيمة الإيجارية": [50000, 120000]
+        })
+        st.table(df_sample)
 
 if __name__ == "__main__":
     main()
