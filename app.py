@@ -1,123 +1,90 @@
 import streamlit as st
 
-# استيراد الوظائف الأساسية لضمان عمل النظام
+# استيراد الوظائف الأساسية - معالجة الخطأ لضمان استمرارية التطبيق
 try:
     from modules.db import init_db, ensure_settings
     from modules.auth import login_required
     from modules.dashboard import render_dashboard
 except Exception as e:
-    st.exception(e)
+    st.error(f"خطأ في تحميل الملفات البرمجية: {e}")
     st.stop()
 
-# إعدادات الصفحة
+# 1. إعدادات الصفحة الأساسية
 st.set_page_config(
     page_title="M. DAGHISTANI CRM",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- محرك التصميم العصري الاحترافي (Modern Clean UI) ---
+# 2. محرك التنسيق العربي الموحد (RTL Engine)
+# هذا الجزء يضمن عدم التكرار وضبط الاتجاه من اليمين لليسار
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
-/* 1. الخلفية: أبيض ناصع مع تدرج رمادي خفيف جداً للفخامة */
-html, body, .stApp {
-    background: #FFFFFF !important; /* خلفية بيضاء نظيفة */
-    color: #1A1A1A !important; /* نصوص سوداء فحمي لسهولة القراءة */
-    font-family: 'Cairo', sans-serif !important;
-    direction: rtl;
-}
+    /* ضبط اتجاه التطبيق بالكامل */
+    .stApp {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Cairo', sans-serif !important;
+        background-color: #f8fafc; /* خلفية هادئة واحترافية */
+    }
 
-/* 2. العناوين: ذهبي نحاسي فخم */
-h1, h2, h3 {
-    font-family: 'Amiri', serif !important;
-    color: #B8860B !important; /* Dark Goldenrod */
-    text-align: center;
-}
+    /* إصلاح اتجاه النصوص في الحقول والقوائم */
+    input, select, textarea, label {
+        direction: rtl !important;
+        text-align: right !important;
+        font-family: 'Cairo', sans-serif !important;
+    }
 
-/* 3. الجداول: تصميم نظيف (Clean Data Grid) */
-.stDataFrame, div[data-testid="stTable"] {
-    background-color: white !important;
-    border: 1px solid #E0E0E0 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
+    /* تنسيق العناوين (دون تكرار) */
+    h1, h2, h3 {
+        color: #B8860B !important; /* ذهبي ملكي */
+        text-align: center !important;
+        margin-bottom: 1rem !important;
+    }
 
-/* عناوين الجداول: أسود ملكي مع خط ذهبي */
-thead tr th {
-    background-color: #1A1A1A !important;
-    color: #B8860B !important;
-    font-weight: 700 !important;
-}
+    /* تنسيق الجداول لتكون واضحة واحترافية */
+    .stDataFrame, table {
+        direction: rtl !important;
+        border: 1px solid #e2e8f0 !important;
+    }
 
-/* خلايا الجداول: بيضاء واضحة جداً */
-tbody tr td {
-    background-color: #FFFFFF !important;
-    color: #333333 !important;
-    border-bottom: 1px solid #F0F0F0 !important;
-}
+    /* تنسيق الأزرار (تصميم موحد وغير متكرر) */
+    div.stButton > button {
+        width: 100%;
+        background-color: #B8860B !important;
+        color: white !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        border: none !important;
+        height: 3rem;
+    }
 
-/* 4. حقول الإدخال: تصميم Apple (Clean Inputs) */
-input, select, textarea {
-    background-color: #F9F9F9 !important;
-    border: 1px solid #D1D1D1 !important;
-    color: #1A1A1A !important;
-    border-radius: 10px !important;
-    padding: 12px !important;
-}
-
-input:focus {
-    border: 2px solid #B8860B !important;
-    background-color: #FFFFFF !important;
-}
-
-/* 5. الأزرار: ذهبي مطفي (Satin Gold) */
-div.stButton > button {
-    background: #B8860B !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-    width: 100%;
-    height: 45px;
-    transition: 0.3s ease;
-}
-
-div.stButton > button:hover {
-    background: #1A1A1A !important; /* يتحول للأسود عند المرور عليه */
-    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
-}
-
-/* 6. تنسيق الجوال */
-@media (max-width: 768px) {
-    .main-title { font-size: 2rem !important; }
-}
+    /* إخفاء أي عناصر تكرار ناتجة عن التنسيقات القديمة */
+    #MainMenu, footer, header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
 def main():
+    # تشغيل قاعدة البيانات والإعدادات مرة واحدة فقط
     init_db()
     ensure_settings()
 
-    # الهيدر (الشعار الرسمي)
+    # الهيدر الاحترافي (إصلاح العبارات)
     st.markdown("""
     <div style="text-align:center; padding:20px 0;">
-        <h1 class="main-title" style="margin:0; font-size:3.5rem;">محمد داغستاني</h1>
-        <div style="color:#B8860B; font-weight:700; font-size:1.2rem; letter-spacing:2px;">
-            CRM & INVESTMENT VALUATION
-        </div>
-        <div style="width:50px; height:3px; background:#1A1A1A; margin:15px auto;"></div>
+        <h1 style="margin:0;">محمد داغستاني للتقييم العقاري</h1>
+        <p style="color:#64748b; font-size:1.1rem; margin-top:5px;">نظام إدارة العلاقات والتقدير الإيجاري الاستثماري</p>
+        <div style="width:100px; height:2px; background:#B8860B; margin:10px auto;"></div>
     </div>
     """, unsafe_allow_html=True)
 
-    # تشغيل نظام الدخول
+    # التحقق من الدخول وتشغيل لوحة التحكم
     user = login_required()
     if user:
-        # تغليف لوحة التحكم في حاوية بيضاء نظيفة
-        st.markdown('<div style="background:#FFFFFF; padding:20px; border-radius:15px;">', unsafe_allow_html=True)
+        # استدعاء لوحة التحكم الأصلية دون تعديل وظائفها
         render_dashboard(user)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
