@@ -1,105 +1,99 @@
 import streamlit as st
 
-# 1. استيراد الموديولات الأساسية (مع معالجة الأخطاء)
+# 1. استيراد الموديولات الأساسية
 try:
     from modules.db import init_db, ensure_settings
     from modules.auth import login_required
     from modules.dashboard import render_dashboard
 except Exception as e:
-    st.error(f"حدث خطأ أثناء تحميل ملفات النظام الأساسية: {e}")
+    st.error(f"حدث خطأ في تحميل النظام: {e}")
     st.stop()
 
-# 2. إعدادات الصفحة (التوافق مع الأجهزة المحمولة)
+# 2. إعدادات الصفحة (أيقونة الشعار والتبويب)
 st.set_page_config(
-    page_title="م. داغستاني | نظام التقدير العقاري",
+    page_title="محمد داغستاني للتقييم العقاري",
+    page_icon="⚜️", # يمكنك استبدالها برابط شعارك المباشر لاحقاً
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 3. محرك التصميم الموحد (RTL & Professional Style)
-# تم ضبط الاتجاه RTL ومنع تكرار أي عناصر
+# 3. محرك التنسيق النهائي (RTL + التبويبات المطورة)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
-    /* ضبط اتجاه الواجهة بالكامل من اليمين لليسار */
-    .stApp, div[data-testid="stAppViewContainer"] {
+    /* ضبط اتجاه الواجهة RTL */
+    .stApp {
         direction: rtl !important;
         text-align: right !important;
         font-family: 'Cairo', sans-serif !important;
-        background-color: #ffffff; /* خلفية بيضاء نظيفة للاحترافية */
+        background-color: #ffffff;
     }
 
-    /* إصلاح اتجاه حقول الإدخال والقوائم */
-    input, select, textarea, label, .stSelectbox, div[role="listbox"] {
-        direction: rtl !important;
-        text-align: right !important;
+    /* تطوير شكل التبويبات (Tabs) لتكون فخمة */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 15px;
+        background-color: #f8fafc;
+        padding: 10px;
+        border-radius: 15px;
+        border: 1px solid #e2e8f0;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre;
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #B8860B !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
     }
 
     /* تنسيق العناوين السيادية */
     h1, h2, h3 {
-        color: #B8860B !important; /* ذهبي ملكي */
+        color: #B8860B !important;
         text-align: center !important;
         font-weight: 900 !important;
     }
 
-    /* تنسيق الجداول (الخلايا) لتكون واضحة واحترافية */
-    .stDataFrame, table {
-        direction: rtl !important;
-        border: 1px solid #f0f0f0 !important;
-    }
-    
-    /* الأزرار الذهبية الموحدة */
-    div.stButton > button {
-        width: 100%;
-        background-color: #B8860B !important;
-        color: white !important;
-        border-radius: 10px !important;
-        font-weight: bold !important;
-        border: none !important;
-        height: 3.2rem;
-        transition: 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: #1a1a1a !important; /* يتحول للأسود الفخم عند التمرير */
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    /* إخفاء عناصر Streamlit الزائدة لمنع التشتت */
+    /* إخفاء عناصر Streamlit لمنع التكرار */
     #MainMenu, footer, header {visibility: hidden;}
-    
-    /* تحسين ظهور العناصر على الآيفون والجوال */
-    @media (max-width: 768px) {
-        .block-container { padding: 1rem !important; }
-        h1 { font-size: 1.8rem !important; }
+
+    /* ضبط الحقول لتناسب الجوال */
+    input, select, .stSelectbox {
+        direction: rtl !important;
+        text-align: right !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 def main():
-    # تشغيل قاعدة البيانات (مرة واحدة فقط)
+    # تهيئة قاعدة البيانات
     init_db()
     ensure_settings()
 
-    # الهيدر الاحترافي (صياغة مصلحة)
+    # الهيدر المعتمد (محمد داغستاني للتقييم العقاري)
     st.markdown("""
-    <div style="text-align:center; padding:30px 0;">
-        <h1 style="margin:0; font-size: 3rem;">محمد داغستاني</h1>
-        <p style="color:#B8860B; font-size:1.3rem; font-weight:700; margin-top:5px;">
-            نظام التقدير الإيجاري الذكي للعقارات الاستثمارية
+    <div style="text-align:center; padding:20px 0;">
+        <h1 style="margin:0; font-size: 3.2rem;">محمد داغستاني للتقييم العقاري</h1>
+        <p style="color:#B8860B; font-size:1.4rem; font-weight:700; margin-top:5px;">
+            نظام إدارة العلاقات والتقدير الإيجاري الاستثماري
         </p>
-        <p style="color:#64748b; font-size:0.9rem; margin-top:-10px;">
-            من مكة المكرمة.. نصلكم بالعالم
-        </p>
-        <div style="width:80px; height:3px; background:#1a1a1a; margin:15px auto; border-radius:5px;"></div>
+        <div style="width:120px; height:3px; background:#1a1a1a; margin:15px auto; border-radius:5px;"></div>
     </div>
     """, unsafe_allow_html=True)
 
-    # التحقق من تسجيل الدخول (استدعاء موديول الأمان الأصلي)
+    # التحقق من الدخول
     user = login_required()
     
     if user:
-        # تشغيل لوحة التحكم الرئيسية (بدون فقدان أي ميزة)
+        # عرض لوحة التحكم الأصلية (التبويبات ستأخذ التنسيق الجديد تلقائياً)
         render_dashboard(user)
 
 if __name__ == "__main__":
