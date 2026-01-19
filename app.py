@@ -1,28 +1,28 @@
 import streamlit as st
 
-# 1. استيراد الموديولات الأساسية
+# 1. تهيئة النظام واستدعاء الموديولات
 try:
     from modules.db import init_db, ensure_settings
     from modules.auth import login_required
     from modules.dashboard import render_dashboard
 except Exception as e:
-    st.error(f"حدث خطأ في تحميل النظام: {e}")
+    st.error(f"خطأ في تحميل المكونات: {e}")
     st.stop()
 
-# 2. إعدادات الصفحة (أيقونة الشعار والتبويب)
+# 2. إعدادات الصفحة المتقدمة للهواتف (Mobile-First)
 st.set_page_config(
     page_title="محمد داغستاني للتقييم العقاري",
-    page_icon="⚜️", # يمكنك استبدالها برابط شعارك المباشر لاحقاً
+    page_icon="⚜️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 3. محرك التنسيق النهائي (RTL + التبويبات المطورة)
+# 3. محرك التنسيق العالمي (UI/UX Mobile Optimization)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
 
-    /* ضبط اتجاه الواجهة RTL */
+    /* تحسين الواجهة للجوال والاتجاه العربي */
     .stApp {
         direction: rtl !important;
         text-align: right !important;
@@ -30,45 +30,47 @@ st.markdown("""
         background-color: #ffffff;
     }
 
-    /* تطوير شكل التبويبات (Tabs) لتكون فخمة */
+    /* تطوير التبويبات (Tabs) لتكون سهلة اللمس على الآيفون */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 15px;
-        background-color: #f8fafc;
-        padding: 10px;
-        border-radius: 15px;
-        border: 1px solid #e2e8f0;
+        display: flex;
+        overflow-x: auto; /* السماح بالتمرير الأفقي في الجوال */
+        background-color: #f1f5f9;
+        padding: 5px;
+        border-radius: 12px;
+        gap: 8px;
     }
     .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        white-space: pre;
+        flex: 1;
+        min-width: 100px;
+        height: 45px;
         background-color: white;
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
-        color: #64748b;
+        border-radius: 8px;
+        color: #1e293b;
         font-weight: 700;
-        transition: 0.3s;
+        border: 1px solid #e2e8f0;
     }
     .stTabs [aria-selected="true"] {
         background-color: #B8860B !important;
         color: white !important;
         border: none !important;
-        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
     }
 
-    /* تنسيق العناوين السيادية */
-    h1, h2, h3 {
-        color: #B8860B !important;
-        text-align: center !important;
-        font-weight: 900 !important;
+    /* تحسين شكل الجداول والبيانات المالية (Luxury Grid) */
+    .stDataFrame, div[data-testid="stTable"] {
+        border-radius: 12px !important;
+        border: 1px solid #B8860B !important;
     }
+    
+    /* تنسيق خريطة الساتلايت */
+    .folium-map { border-radius: 15px !important; }
 
-    /* إخفاء عناصر Streamlit لمنع التكرار */
+    /* إخفاء الزوائد لمنع التشتت */
     #MainMenu, footer, header {visibility: hidden;}
 
-    /* ضبط الحقول لتناسب الجوال */
-    input, select, .stSelectbox {
-        direction: rtl !important;
-        text-align: right !important;
+    /* ضبط الهوامش للجوال */
+    @media (max-width: 768px) {
+        .block-container { padding: 1rem !important; }
+        h1 { font-size: 1.8rem !important; }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -78,22 +80,23 @@ def main():
     init_db()
     ensure_settings()
 
-    # الهيدر المعتمد (محمد داغستاني للتقييم العقاري)
+    # شعار الصفحة المطور (Responsive Header)
     st.markdown("""
-    <div style="text-align:center; padding:20px 0;">
-        <h1 style="margin:0; font-size: 3.2rem;">محمد داغستاني للتقييم العقاري</h1>
-        <p style="color:#B8860B; font-size:1.4rem; font-weight:700; margin-top:5px;">
+    <div style="text-align:center; padding:15px 0;">
+        <h1 style="margin:0; font-size: 2.5rem; color:#B8860B;">محمد داغستاني للتقييم العقاري</h1>
+        <p style="color:#B8860B; font-size:1.1rem; font-weight:700; margin-top:5px;">
             نظام إدارة العلاقات والتقدير الإيجاري الاستثماري
         </p>
-        <div style="width:120px; height:3px; background:#1a1a1a; margin:15px auto; border-radius:5px;"></div>
+        <div style="width:60px; height:2px; background:#1e293b; margin:10px auto; border-radius:5px;"></div>
     </div>
     """, unsafe_allow_html=True)
 
-    # التحقق من الدخول
+    # التحقق من تسجيل الدخول
     user = login_required()
     
     if user:
-        # عرض لوحة التحكم الأصلية (التبويبات ستأخذ التنسيق الجديد تلقائياً)
+        # ملاحظة برمجية: ميزة الساتلايت تمت برمجتها داخل موديول الخريطة 
+        # لتعمل تلقائياً عند عرض لوحة التحكم.
         render_dashboard(user)
 
 if __name__ == "__main__":
